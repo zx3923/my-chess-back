@@ -1,10 +1,11 @@
 package chess.chess_game.dto;
 
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
-public class RegisterRequest {
+@Data
+public class UserRegistrationRequest {
     private String username;
     private String email;
     private String password;
+    private String confirmPassword;
 }
