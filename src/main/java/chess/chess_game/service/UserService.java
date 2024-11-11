@@ -1,5 +1,6 @@
 package chess.chess_game.service;
 
+import chess.chess_game.dto.UserLoginRequest;
 import chess.chess_game.dto.UserRegistrationRequest;
 import chess.chess_game.entity.User;
 import chess.chess_game.repository.UserRepository;
@@ -23,6 +24,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // 회원가입
     public Map<String, Object> registerUser(UserRegistrationRequest request) {
         Map<String, Object> response = new HashMap<>();
 
@@ -61,6 +63,31 @@ public class UserService {
 
         response.put("status", true);
         response.put("message", "회원가입 성공!");
+        return response;
+    }
+
+    // 로그인
+    public Map<String, Object> loginUser(UserLoginRequest request) {
+        Map<String, Object> response = new HashMap<>();
+
+        // 이메일로 유저 조회
+        User user = userRepository.findByEmail(request.getEmail());
+        if (user == null) {
+            response.put("status", false);
+            response.put("message", "없는 계정");
+            return response;
+        }
+
+        // 비밀번호 체크
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            response.put("status", false);
+            response.put("message", "비밀번호 오류");
+            return response;
+        }
+
+        response.put("status", true);
+        response.put("message", "로그인 성공!");
+        response.put("username", user.getUsername());
         return response;
     }
 }
