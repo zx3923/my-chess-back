@@ -27,10 +27,11 @@ public class JwtUtil {
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24시간
 
     // JWT 토큰 생성
-    public String generateToken(String username) {
-        System.out.println(getSecretKey());
+    public String generateToken(String email) {
+        System.out.println("토큰생성시 이메일 확인");
+        System.out.println(email);
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS256, getSecretKey())
@@ -48,9 +49,9 @@ public class JwtUtil {
     }
 
     // JWT 유효성 검사
-    public boolean validateToken(String token, String username) {
+    public boolean validateToken(String token, String email) {
         String extractedUsername = extractUsername(token);
-        return (username.equals(extractedUsername) && !isTokenExpired(token));
+        return (email.equals(extractedUsername) && !isTokenExpired(token));
     }
 
     // JWT 만료 여부 확인

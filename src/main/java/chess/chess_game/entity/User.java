@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "[user]")
+@Table(name = "[USER]")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class User {
     private LocalDateTime createdAt;
 
     // 선택한 게임 모드와 매칭 상태
-    private String preferredMode;
+    private String selectedGameType;
     private boolean isMatched;
 
     // 게임 모드에 따른 레이팅 반환

@@ -1,39 +1,30 @@
 package chess.chess_game.controller;
 
-import chess.chess_game.dto.GameRoomDto;
-import chess.chess_game.dto.MatchRequestDto;
+import chess.chess_game.dto.MatchResult;
+import chess.chess_game.entity.User;
 import chess.chess_game.service.MatchService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/match")
-@RequiredArgsConstructor
 public class MatchController {
 
     private final MatchService matchService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    @PostMapping("/request")
-    public ResponseEntity<String> requestMatch(@RequestBody MatchRequestDto requestDto) {
-
-        boolean isQueued = matchService.addMatchRequest(requestDto);
-
-        if (isQueued) {
-            return ResponseEntity.ok("매칭 돌리기 성공");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("요청 처리 불가");
-        }
+    public MatchController(MatchService matchService, SimpMessagingTemplate messagingTemplate) {
+        this.matchService = matchService;
+        this.messagingTemplate = messagingTemplate;
     }
 
-    @GetMapping("/status/{userId}")
-    public ResponseEntity<GameRoomDto> checkMatchStatus(@PathVariable Long userId) {
-        GameRoomDto gameRoom = matchService.getGameRoomForUser(userId);
-        if (gameRoom != null) {
-            return ResponseEntity.ok(gameRoom);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    @MessageMapping("/match")
+    public void matchUser(User user) {
+        MatchResult result = matchService.processMatchRequest(user);
+
+        if (result.isSuccess()) {
+            // 매칭 성공 시 결과를 WebSocket으로 전송
+            messagingTemplate.convertAndSend("/topic/match-success", result);
         }
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -71,15 +72,15 @@ public class UserService {
         Map<String, Object> response = new HashMap<>();
 
         // 이메일로 유저 조회
-        User user = userRepository.findByEmail(request.getEmail());
-        if (user == null) {
+        Optional<User> user = userRepository.findByEmail(request.getEmail());
+        if (user.isEmpty()) {
             response.put("status", false);
             response.put("message", "없는 계정");
             return response;
         }
 
         // 비밀번호 체크
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.get().getPasswordHash())) {
             response.put("status", false);
             response.put("message", "비밀번호 오류");
             return response;
@@ -87,7 +88,7 @@ public class UserService {
 
         response.put("status", true);
         response.put("message", "로그인 성공!");
-        response.put("username", user.getUsername());
+        response.put("username", user.get().getUsername());
         return response;
     }
 }

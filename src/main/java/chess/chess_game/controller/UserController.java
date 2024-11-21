@@ -1,5 +1,6 @@
 package chess.chess_game.controller;
 
+import chess.chess_game.config.JwtUtil;
 import chess.chess_game.dto.UserLoginRequest;
 import chess.chess_game.dto.UserRegistrationRequest;
 import chess.chess_game.service.UserService;
@@ -18,10 +19,12 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/register")
@@ -43,6 +46,8 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody UserLoginRequest request) {
         try {
             Map<String, Object> result = userService.loginUser(request);
+            String token = jwtUtil.generateToken(request.getEmail());
+            result.put("token", token);
             System.out.println("@@@@@@@@@@@@@@@@@@@@@");
             System.out.println(result);
             return ResponseEntity.ok(result);
