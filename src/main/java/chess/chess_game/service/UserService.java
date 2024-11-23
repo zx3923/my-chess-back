@@ -89,6 +89,7 @@ public class UserService {
         response.put("status", true);
         response.put("message", "로그인 성공!");
         response.put("username", user.get().getUsername());
+        response.put("userId", user.get().getUserId());
         return response;
     }
 }
