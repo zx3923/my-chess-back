@@ -12,6 +12,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.io.IOException;
+
 @Configuration
 public class SecurityConfig {
 
@@ -36,7 +38,6 @@ public class SecurityConfig {
                 )
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
-
         return http.build();
     }
 
