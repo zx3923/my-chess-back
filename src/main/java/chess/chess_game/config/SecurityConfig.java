@@ -33,7 +33,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/register", "/user/login").permitAll() // 인증 없이 접근 가능
+                        .requestMatchers("/user/register", "/user/login", "/user/refresh").permitAll() // 인증 없이 접근 가능
                         .anyRequest().authenticated() // 다른 모든 요청은 인증 필요
                 )
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화

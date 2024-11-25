@@ -1,6 +1,7 @@
 package chess.chess_game.controller;
 
 import chess.chess_game.config.JwtUtil;
+import chess.chess_game.dto.TokenRequest;
 import chess.chess_game.dto.UserLoginRequest;
 import chess.chess_game.dto.UserRegistrationRequest;
 import chess.chess_game.service.UserService;
@@ -79,6 +80,35 @@ public class UserController {
         result.put("status", false);
         result.put("message", "Authorization 헤더가 없습니다.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, Object>> refreshAccessToken(@RequestBody TokenRequest tokenRequest) {
+        System.out.println("리프레시 토큰 발급 확인");
+        Map<String, Object> result = new HashMap<>();
+        String refreshToken = tokenRequest.getRefreshToken();
+
+        try {
+            // 리프레시 토큰 유효성 검사
+            String email = jwtUtil.extractUsername(refreshToken);
+            if (jwtUtil.validateToken(refreshToken, email)) {
+                System.out.println("성공");
+                // 새로운 엑세스 토큰 발급
+                String newAccessToken = jwtUtil.generateToken(email);
+                System.out.println(newAccessToken);
+                result.put("token", newAccessToken);
+                System.out.println(result);
+                return ResponseEntity.ok(result);
+            } else {
+                System.out.println("실패");
+                result.put("message", "잘못된 토큰");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+            }
+        } catch (Exception e) {
+            System.out.println("실패2");
+            result.put("message", "잘못된 토큰");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+        }
     }
 
 }

@@ -80,6 +80,7 @@ public class JwtUtil {
     private boolean isTokenExpired(String token) {
         Date expirationDate = Jwts.parserBuilder()
                 .setSigningKey(getSecretKey())
+                .setAllowedClockSkewSeconds(60) // 허용 시간 차이 60초 설정
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
